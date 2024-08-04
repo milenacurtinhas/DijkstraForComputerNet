@@ -2,13 +2,8 @@
 #include <stdlib.h>
 #include "PQ.h"
 #include "item.h"
-
-Item make_item(int id, double value) {
-    Item t;
-    id(t) = id;
-    value(t) = value;
-    return t;
-}
+#include "vertex.h"
+#include "dijkstra.h"
 
 int main(int argc, char *argv[]) {
     
@@ -16,7 +11,7 @@ int main(int argc, char *argv[]) {
 
     int i, v, e, sSize, cSize, mSize, x, y;
     int *s, *c, *m;
-    float z;
+    double z;
 
     fscanf(file, "%d", &v);
     fscanf(file, "%d", &e);
@@ -38,10 +33,24 @@ int main(int argc, char *argv[]) {
         fscanf(file, "%d", &m[i]);
     }
 
-    for(i = 0; i < e; i++){
-        fscanf(file, "%d %d %f", &x, &y, &z);
+    Vertex **vertexes = malloc(v * sizeof(Vertex*));
+    
+    for (i = 0; i < v; i++){
+        vertexes[i] = vertexInitialize(i);
     }
+    
+    for(i = 0; i < e; i++){
+        fscanf(file, "%d %d %lf", &x, &y, &z);
+        vertexAddEdge(vertexes[x], y, z);
+    }
+    
+    Item *result = dijkstra(vertexes, v, 2);
 
+    vertexesDestroy(vertexes, v);
+    free(s);
+    free(c);
+    free(m);
+    free(result);
     fclose(file);
     
     // inicializando a PQ
