@@ -4,12 +4,13 @@
 #include "item.h"
 #include "vertex.h"
 #include "dijkstra.h"
+#include "RTT.h"
 
 int main(int argc, char *argv[]) {
     
     FILE* file = fopen(argv[1], "r");
 
-    int i, v, e, sSize, cSize, mSize, x, y;
+    int i, v, e, sSize, cSize, mSize, x, y, k = 0;
     int *s, *c, *m;
     double z;
 
@@ -43,14 +44,43 @@ int main(int argc, char *argv[]) {
         fscanf(file, "%d %d %lf", &x, &y, &z);
         vertexAddEdge(vertexes[x], y, z);
     }
-    
-    Item *result = dijkstra(vertexes, v, 2);
+
+    Item ***resultStoC = malloc(sizeof(Item**)*sSize);
+    Item ***resultCtoS = malloc(sizeof(Item**)*cSize);
+
+    for(i = 0; i < sSize; i++){
+        resultStoC[i] = dijkstra(vertexes, v, s[i]);
+    }
+
+    for(i = 0; i < cSize; i++){
+        resultCtoS[i] = dijkstra(vertexes, v, c[i]);
+    }
+
+    RTT *rtt = malloc(sizeof(RTT)*sSize*cSize);
+
+    for(i = 0; i < sSize; i++){
+        x = s[i];
+        for(int j = 0; i < cSize; i++){            
+            y = c[j];
+            double sum = resultStoC[x][y]->value + resultCtoS[y][x]->value;
+
+            rtt[k] = rtt_construct(x, y, sum);  
+            k++;
+        }
+    }
 
     vertexesDestroy(vertexes, v);
     free(s);
     free(c);
     free(m);
-    free(result);
+    for(i = 0; i < sSize; i++){
+        dijkstraDestroy(resultStoC[i], v);
+    }
+    for(i = 0; i < cSize; i++){
+        dijkstraDestroy(resultCtoS[i], v);
+    }
+    free(resultStoC);
+    free(resultCtoS);
     fclose(file);
     
     // inicializando a PQ
