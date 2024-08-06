@@ -13,7 +13,7 @@ $(OBJDIR):
 	mkdir -p $(OBJDIR)
 	
 trab2: $(OBJDIR) $(OBJECTS) client.c
-	$(CC) $(CFLAGS) -o trab1 client.c $(OBJECTS) $(LIBS)
+	$(CC) $(CFLAGS) -o trab2 client.c $(OBJECTS) $(LIBS)
 
 $(OBJDIR)/dijkstra.o: $(SRCDIR)/dijkstra.c
 	$(CC) $(CFLAGS) -c $(SRCDIR)/dijkstra.c -o $(OBJDIR)/dijkstra.o

@@ -1,4 +1,3 @@
-#include <math.h>
 #include "dijkstra.h"
 #include "PQ.h"
 #include "item.h"
@@ -50,10 +49,10 @@ Item **dijkstra(Vertex **vertexes, int vertexesQtt, int startID){
         }
     }
 
-     for(i = 0; i < vertexesQtt; i++){
-        Item* adjacent = result[i];
-        printf("Distancia de %d a %d: %.20lf\n", startID, adjacent->id, adjacent->value);
-     }
+    // for(i = 0; i < vertexesQtt; i++){
+    //     Item* adjacent = result[i];
+    //     printf("Distancia de %d a %d: %.20lf\n", startID, adjacent->id, adjacent->value);
+    // }
 
     PQ_finish(visited, map, pq);
 

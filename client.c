@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     
     FILE* file = fopen(argv[1], "r");
 
-    int i, v, e, sSize, cSize, mSize, x, y, k = 0;
+    int i, v, e, sSize, cSize, mSize, x, y;
     int *s, *c, *m;
     double z;
 
@@ -27,9 +27,11 @@ int main(int argc, char *argv[]) {
     for(i = 0; i < sSize; i++){
         fscanf(file, "%d", &s[i]);
     }
+
     for(i = 0; i < cSize; i++){
         fscanf(file, "%d", &c[i]);
     }
+    
     for(i = 0; i < mSize; i++){
         fscanf(file, "%d", &m[i]);
     }
@@ -45,62 +47,53 @@ int main(int argc, char *argv[]) {
         vertexAddEdge(vertexes[x], y, z);
     }
 
-    Item ***resultStoC = malloc(sizeof(Item**)*sSize);
-    Item ***resultCtoS = malloc(sizeof(Item**)*cSize);
-
+    Item ***resultS = malloc(sizeof(Item**)*sSize);
+    Item ***resultC = malloc(sizeof(Item**)*cSize);
+    Item ***resultM = malloc(sizeof(Item**)*mSize);
+    
     for(i = 0; i < sSize; i++){
-        resultStoC[i] = dijkstra(vertexes, v, s[i]);
+        resultS[i] = dijkstra(vertexes, v, s[i]);
     }
 
     for(i = 0; i < cSize; i++){
-        resultCtoS[i] = dijkstra(vertexes, v, c[i]);
+        resultC[i] = dijkstra(vertexes, v, c[i]);
+    }
+
+    for(i = 0; i < mSize; i++){
+        resultM[i] = dijkstra(vertexes, v, m[i]);
     }
 
     RTT *rtt = malloc(sizeof(RTT)*sSize*cSize);
+    RTT *rttStar = malloc(sizeof(RTT)*sSize*cSize);
+    
+    realRTT(s, sSize, c, cSize, resultS, resultC, rtt);
+    RTTStar(s, sSize, c, cSize, m, mSize, resultS, resultC, resultM, rttStar);
+    percentage(rtt, rttStar, sSize*cSize);
 
-    for(i = 0; i < sSize; i++){
-        x = s[i];
-        for(int j = 0; i < cSize; i++){            
-            y = c[j];
-            double sum = resultStoC[x][y]->value + resultCtoS[y][x]->value;
+    FILE* output = fopen(argv[2], "w");
 
-            rtt[k] = rtt_construct(x, y, sum);  
-            k++;
-        }
+    for(i = 0; i < sSize*cSize; i++){
+        fprintf(output, "%d %d %.20lf\n", rtt[i].v1, rtt[i].v2, rtt[i].value);
     }
-
+    
     vertexesDestroy(vertexes, v);
+    for(i = 0; i < sSize; i++){
+        dijkstraDestroy(resultS[i], v);
+    }
+    for(i = 0; i < cSize; i++){
+        dijkstraDestroy(resultC[i], v);
+    }
+    for(i = 0; i < mSize; i++){
+        dijkstraDestroy(resultM[i], v);
+    }
     free(s);
     free(c);
     free(m);
-    for(i = 0; i < sSize; i++){
-        dijkstraDestroy(resultStoC[i], v);
-    }
-    for(i = 0; i < cSize; i++){
-        dijkstraDestroy(resultCtoS[i], v);
-    }
-    free(resultStoC);
-    free(resultCtoS);
+    free(rtt);
+    free(rttStar);
+    free(resultS);
+    free(resultC);
+    free(resultM);
     fclose(file);
-    
-    // inicializando a PQ
-    // PQ_init(10);
-
-    // // inserindo alguns elementos na PQ
-    // PQ_insert(make_item(1, 10.0));
-    // PQ_insert(make_item(6, 5.0));
-    // PQ_insert(make_item(3, 3.0));
-    // PQ_insert(make_item(4, 4.0));
-    // PQ_insert(make_item(7, 7.0));
-    // PQ_insert(make_item(2, 1.0));
-
-    // // alterando a prioridade de alguns elementos
-    // PQ_decrease_key(4, 0.5); // agora o nó 4 tem valor 0.5, sua posição no heap deve mudar
-    // PQ_decrease_key(6, 0.1); // agora o nó 6 tem valor 0.1, sua posição no heap deve mudar
-
-    // // removendo o menor elemento e imprimindo
-    // while (!PQ_empty()) {
-    //     Item p = PQ_delmin();
-    //     printf("Identificador %d, prioridade %lf\n", id(p), value(p));
-    // }
+    fclose(output);
 }

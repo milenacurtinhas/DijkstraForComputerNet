@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "edge.h"
 #include "PQ.h"
 #include "vertex.h"
