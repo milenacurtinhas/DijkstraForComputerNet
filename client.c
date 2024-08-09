@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     FILE* output = fopen(argv[2], "w");
 
     for(i = 0; i < sSize*cSize; i++){
-        fprintf(output, "%d %d %.20lf\n", rtt[i].v1, rtt[i].v2, rtt[i].value);
+        fprintf(output, "%d %d %.16lf\n", rtt[i].v1, rtt[i].v2, rtt[i].value);
     }
     
     vertexesDestroy(vertexes, v);
